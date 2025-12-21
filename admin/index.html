@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Movie Course</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- Login Form -->
+        <div id="loginForm" class="flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-lg shadow-md w-96">
+                <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+                <form onsubmit="login(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Username</label>
+                        <input type="text" id="username" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden">
+            <nav class="bg-white shadow-sm border-b">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex items-center">
+                            <h1 class="text-xl font-semibold">AI Movie Course - Admin</h1>
+                        </div>
+                        <div class="flex items-center">
+                            <button onclick="logout()" class="text-gray-500 hover:text-gray-700">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div class="px-4 py-6 sm:px-0">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Orders Management</h2>
+                        <button onclick="loadOrders()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            Refresh Orders
+                        </button>
+                    </div>
+
+                    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                        <ul id="ordersList" class="divide-y divide-gray-200">
+                            <!-- Orders will be loaded here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('adminToken');
+        
+        if (token) {
+            showDashboard();
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    token = data.token;
+                    localStorage.setItem('adminToken', token);
+                    showDashboard();
+                } else {
+                    alert('Invalid credentials');
+                }
+            } catch (error) {
+                alert('Login failed');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadOrders();
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch('/admin/orders', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayOrders(data.orders);
+                }
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+            }
+        }
+
+        function displayOrders(orders) {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<li class="p-4 text-gray-500">No orders found</li>';
+                return;
+            }
+            
+            ordersList.innerHTML = orders.map(order => `
+                <li class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900">${order.customer_name}</p>
+                                <div class="ml-2 flex-shrink-0 flex">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}">
+                                        ${order.status}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:flex sm:justify-between">
+                                <div class="sm:flex">
+                                    <p class="flex items-center text-sm text-gray-500">
+                                        Order ID: ${order.id}
+                                    </p>
+                                    <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                        Amount: Rp ${order.amount.toLocaleString('id-ID')}
+                                    </p>
+                                </div>
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                    <p>${new Date(order.created_at).toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Email: ${order.email}</p>
+                                <p class="text-sm text-gray-500">Phone: ${order.phone}</p>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-sm border rounded px-2 py-1">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="paid" ${order.status === 'paid' ? 'selected' : ''}>Paid</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'paid': return 'bg-green-100 text-green-800';
+                case 'pending': return 'bg-yellow-100 text-yellow-800';
+                case 'cancelled': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const response = await fetch(`/admin/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    loadOrders(); // Refresh the list
+                } else {
+                    alert('Failed to update order status');
+                }
+            } catch (error) {
+                alert('Failed to update order status');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            token = null;
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
