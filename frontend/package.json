@@ -2,6 +2,15 @@
   "name": "ai-movie-course-integrated",
   "version": "1.0.0",
   "type": "module",
+  "description": "AI Movie Maker Course - Frontend",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aribuy/buatfilm-agentbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aribuy/buatfilm-agentbar/issues"
+  },
+  "homepage": "https://buatfilm.agentbar.ai",
   "scripts": {
     "dev": "vite --port 3001",
     "build": "vite build",

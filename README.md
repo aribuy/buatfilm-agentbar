@@ -4,6 +4,9 @@
 
 Platform pembelajaran lengkap untuk membuat film menggunakan AI tools.
 
+### 📦 Repository
+- **GitHub**: https://github.com/aribuy/buatfilm-agentbar
+
 ### 🚀 Production URL
 - **Frontend**: https://buatfilm.agentbar.ai
 - **Backend API**: https://api.agentbar.ai

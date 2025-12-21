@@ -2,6 +2,15 @@
   "name": "ai-movie-course-backend",
   "version": "1.0.0",
   "type": "module",
+  "description": "AI Movie Maker Course - Backend API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aribuy/buatfilm-agentbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aribuy/buatfilm-agentbar/issues"
+  },
+  "homepage": "https://api.agentbar.ai",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js"
