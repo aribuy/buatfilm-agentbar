@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PaymentConfirmation from '../components/PaymentConfirmation';
 import { generateOrderId, generateOrderToken, generateUniqueCode, calculateTotal, Order, OrderStatus } from '../utils/orderSystem';
+import { createPayment } from '../utils/paymentService';
 
 interface FormData {
   name: string;
@@ -55,8 +56,6 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
       const basePrice = 99000;
       const uniqueCode = generateUniqueCode();
       const now = new Date();
@@ -79,10 +78,28 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
         ]
       };
       
+      // Create payment
+      const paymentData = {
+        orderId: order.id,
+        amount: order.totalAmount,
+        email: order.email,
+        phone: order.phone,
+        name: order.customerName
+      };
+      
+      const paymentResult = await createPayment(paymentData);
+      
+      if (paymentResult.success && paymentResult.paymentUrl) {
+        // Only redirect if we have real payment URL
+        window.open(paymentResult.paymentUrl, '_blank');
+      }
+      
+      // Always create order for demo
       onOrderCreated(order);
       
     } catch (error) {
       console.error('Order error:', error);
+      alert('Terjadi kesalahan saat membuat pesanan. Silakan coba lagi.');
       setIsSubmitting(false);
     }
   };

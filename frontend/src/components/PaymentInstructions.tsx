@@ -52,10 +52,10 @@ const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
 
   const renderBankTransferInstructions = () => {
     const bankDetails = {
-      bca: { name: 'Bank BCA', account: '1234567890', holder: 'PT Komit Digital' },
+      bca: { name: 'Bank BCA', account: '5226288510', holder: 'Faisal Heri Setiawan' },
       bsi: { name: 'Bank Syariah Indonesia', account: '5226288510', holder: 'Faisal Heri Setiawan' },
-      bni: { name: 'Bank BNI', account: '0987654321', holder: 'PT Komit Digital' },
-      jago: { name: 'Bank Jago', account: '1122334455', holder: 'PT Komit Digital' }
+      bni: { name: 'Bank BNI', account: '5226288510', holder: 'Faisal Heri Setiawan' },
+      jago: { name: 'Bank Jago', account: '5226288510', holder: 'Faisal Heri Setiawan' }
     };
 
     const bank = bankDetails[paymentMethod as keyof typeof bankDetails];

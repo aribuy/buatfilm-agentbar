@@ -1,16 +1,16 @@
 {
-  "name": "ai-movie-course-backend",
+  "name": "payment-api",
   "version": "1.0.0",
-  "type": "module",
+  "main": "payment-server.js",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node payment-server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
     "midtrans-client": "^1.3.1",
+    "nodemailer": "^7.0.11",
     "xendit-node": "^4.0.0"
   }
 }
