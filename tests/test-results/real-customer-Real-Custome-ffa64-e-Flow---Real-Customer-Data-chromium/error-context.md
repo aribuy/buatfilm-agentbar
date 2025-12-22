@@ -1,0 +1,134 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - button "Kembali" [ref=e5] [cursor=pointer]:
+    - img [ref=e6]
+    - text: Kembali
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - heading "⏰ Promo Berakhir Dalam:" [level=3] [ref=e10]
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: "23"
+          - generic [ref=e14]: Jam
+        - generic [ref=e15]:
+          - generic [ref=e16]: "59"
+          - generic [ref=e17]: Menit
+        - generic [ref=e18]:
+          - generic [ref=e19]: "30"
+          - generic [ref=e20]: Detik
+    - generic [ref=e21]:
+      - heading "🚀 DAPATKAN AKSES SEKARANG" [level=2] [ref=e22]
+      - paragraph [ref=e23]: Isi form di bawah untuk mendapatkan akses course
+      - generic [ref=e24]:
+        - generic [ref=e25]: ⚡ Hanya tersisa 17 slot!
+        - generic [ref=e26]: 🔥 1,247+ orang sudah bergabung
+        - generic [ref=e27]: ⏰ Promo berakhir dalam 23:59:45
+    - generic [ref=e28]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - heading "📝 Data Diri" [level=3] [ref=e32]
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - generic [ref=e35]: Nama Lengkap *
+              - textbox "Masukkan nama lengkap" [ref=e36]: Endik
+            - generic [ref=e37]:
+              - generic [ref=e38]: WhatsApp *
+              - generic [ref=e39]:
+                - generic [ref=e41]: "+62"
+                - textbox "812345678" [ref=e42]: "08811210687"
+            - generic [ref=e43]:
+              - generic [ref=e44]: Email *
+              - textbox "nama@email.com" [active] [ref=e45]: aribuy88@gmail.com
+        - generic [ref=e46]:
+          - heading "💳 Pilih Metode Pembayaran" [level=3] [ref=e47]
+          - generic [ref=e48]:
+            - heading "🏦 Bank Transfer" [level=4] [ref=e49]
+            - generic [ref=e50]:
+              - generic [ref=e51] [cursor=pointer]:
+                - radio "Bank BCA Bank BCA" [checked] [ref=e52]
+                - img "Bank BCA" [ref=e53]
+                - generic [ref=e54]: Bank BCA
+              - generic [ref=e55] [cursor=pointer]:
+                - radio "Bank Syariah Indonesia Bank Syariah Indonesia" [ref=e56]
+                - img "Bank Syariah Indonesia" [ref=e57]
+                - generic [ref=e58]: Bank Syariah Indonesia
+              - generic [ref=e59] [cursor=pointer]:
+                - radio "Bank BNI Bank BNI" [ref=e60]
+                - img "Bank BNI" [ref=e61]
+                - generic [ref=e62]: Bank BNI
+              - generic [ref=e63] [cursor=pointer]:
+                - radio "Bank Jago Bank Jago" [ref=e64]
+                - img "Bank Jago" [ref=e65]
+                - generic [ref=e66]: Bank Jago
+          - generic [ref=e67]:
+            - heading "📱 E-Wallet" [level=4] [ref=e68]
+            - generic [ref=e69]:
+              - generic [ref=e70] [cursor=pointer]:
+                - radio "GoPay GoPay" [ref=e71]
+                - img "GoPay" [ref=e72]
+                - generic [ref=e73]: GoPay
+              - generic [ref=e74] [cursor=pointer]:
+                - radio "ShopeePay ShopeePay" [ref=e75]
+                - img "ShopeePay" [ref=e76]
+                - generic [ref=e77]: ShopeePay
+              - generic [ref=e78] [cursor=pointer]:
+                - radio "OVO OVO" [ref=e79]
+                - img "OVO" [ref=e80]
+                - generic [ref=e81]: OVO
+              - generic [ref=e82] [cursor=pointer]:
+                - radio "DANA DANA" [ref=e83]
+                - img "DANA" [ref=e84]
+                - generic [ref=e85]: DANA
+              - generic [ref=e86] [cursor=pointer]:
+                - radio "LinkAja LinkAja" [ref=e87]
+                - img "LinkAja" [ref=e88]
+                - generic [ref=e89]: LinkAja
+          - generic [ref=e90]:
+            - heading "🔲 Scan & Pay" [level=4] [ref=e91]
+            - generic [ref=e93] [cursor=pointer]:
+              - radio "QRIS QRIS - Semua Bank & E-Wallet" [ref=e94]
+              - img "QRIS" [ref=e95]
+              - generic [ref=e96]: QRIS - Semua Bank & E-Wallet
+        - button "🚀 Order Sekarang - Rp 99.000 → ⚡ Klaim slot Anda sebelum terlambat!" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: 🚀
+              - text: Order Sekarang - Rp 99.000
+              - generic [ref=e101]: →
+            - generic [ref=e102]: ⚡ Klaim slot Anda sebelum terlambat!
+      - generic [ref=e104]:
+        - heading "📋 Ringkasan Pesanan" [level=3] [ref=e105]
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: 🔥 HARGA PROMO TERBATAS!
+            - generic [ref=e109]:
+              - generic [ref=e110]: "Harga Normal:"
+              - generic [ref=e111]: Rp 199.000
+          - generic [ref=e112]:
+            - generic [ref=e113]: Kelas Buat Film Pakai AI
+            - generic [ref=e114]: Rp 99.000
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - generic [ref=e117]: Total
+              - generic [ref=e118]: Rp 99.000
+            - paragraph [ref=e119]: 💰 Anda hemat Rp 100.000!
+        - generic [ref=e120]:
+          - heading "✅ Yang Anda Dapatkan:" [level=4] [ref=e121]
+          - list [ref=e122]:
+            - listitem [ref=e123]: • 5 Modul Lengkap
+            - listitem [ref=e124]: • Studi Kasus Nyata
+            - listitem [ref=e125]: • Tools AI Premium
+            - listitem [ref=e126]: • Template Prompt
+            - listitem [ref=e127]: • Grup Eksklusif
+            - listitem [ref=e128]: • Akses Seumur Hidup
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - paragraph [ref=e131]: "⚠️ PERINGATAN: Hanya 17 slot tersisa!"
+            - paragraph [ref=e132]: Setelah slot habis, harga akan naik menjadi Rp 199.000
+          - generic [ref=e133]:
+            - generic [ref=e134]: 🔒 Pembayaran Aman
+            - generic [ref=e135]: 📱 Akses Instant
+            - generic [ref=e136]: 💰 Garansi 30 Hari
+```

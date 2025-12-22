@@ -1,0 +1,19 @@
+{
+  "name": "buatfilm-enhanced-testing",
+  "version": "2.0.0",
+  "description": "Enhanced E2E testing with robust error handling",
+  "scripts": {
+    "test": "playwright test --config=playwright.config.enhanced.ts",
+    "test:enhanced": "./run-enhanced-tests.sh",
+    "test:headed": "playwright test --config=playwright.config.enhanced.ts --headed",
+    "test:debug": "playwright test --config=playwright.config.enhanced.ts --debug",
+    "test:report": "playwright show-report",
+    "test:ui": "playwright test --config=playwright.config.enhanced.ts --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": ["e2e", "testing", "playwright", "automation", "buatfilm"],
+  "author": "AI Movie Course Team"
+}

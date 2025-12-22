@@ -1,0 +1,273 @@
+{
+  "config": {
+    "configFile": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/playwright.config.enhanced.ts",
+    "rootDir": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "real-customer.spec.ts",
+      "file": "real-customer.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Real Customer Testing - Endik",
+          "file": "real-customer.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete Purchase Flow - Real Customer Data",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30642,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/helpers/test-helpers.ts",
+                            "column": 21,
+                            "line": 50
+                          },
+                          "message": "Error: page.screenshot: Target page, context or browser has been closed\n\n   at helpers/test-helpers.ts:50\n\n  48 |\n  49 |   async takeScreenshot(name: string) {\n> 50 |     await this.page.screenshot({ \n     |                     ^\n  51 |       path: `test-results/${name}-${Date.now()}.png`, \n  52 |       fullPage: true \n  53 |     });\n    at TestHelpers.takeScreenshot (/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/helpers/test-helpers.ts:50:21)\n    at /Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/real-customer.spec.ts:35:21"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-21T13:08:15.483Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium/trace.zip"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30614,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/helpers/test-helpers.ts",
+                            "column": 21,
+                            "line": 50
+                          },
+                          "message": "Error: page.screenshot: Target page, context or browser has been closed\n\n   at helpers/test-helpers.ts:50\n\n  48 |\n  49 |   async takeScreenshot(name: string) {\n> 50 |     await this.page.screenshot({ \n     |                     ^\n  51 |       path: `test-results/${name}-${Date.now()}.png`, \n  52 |       fullPage: true \n  53 |     });\n    at TestHelpers.takeScreenshot (/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/helpers/test-helpers.ts:50:21)\n    at /Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/real-customer.spec.ts:35:21"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-12-21T13:08:48.142Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium-retry1/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/endik/PyCharmMiscProject/ai-movie-course-integrated/tests/test-results/real-customer-Real-Custome-ffa64-e-Flow---Real-Customer-Data-chromium-retry1/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "73b3e75fc0dedd573855-02587c9109a971c09dd5",
+              "file": "real-customer.spec.ts",
+              "line": 7,
+              "column": 7
+            },
+            {
+              "title": "Notification Validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 382,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📧 Email notifications sent to: endikc@gmail.com\n"
+                        },
+                        {
+                          "text": "📱 WhatsApp notifications sent to: 08118088180\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-21T13:09:20.277Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73b3e75fc0dedd573855-71b6f9d9bdd3108d2d3b",
+              "file": "real-customer.spec.ts",
+              "line": 41,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-21T13:08:15.124Z",
+    "duration": 66105.53899999999,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
