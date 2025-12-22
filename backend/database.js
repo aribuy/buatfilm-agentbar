@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Order Schema
 const orderSchema = new mongoose.Schema({
@@ -15,10 +15,10 @@ const orderSchema = new mongoose.Schema({
   paidAt: Date
 });
 
-const Order = mongoose.model('Order', orderSchema);
+export const Order = mongoose.model('Order', orderSchema);
 
 // Database connection
-const connectDB = async () => {
+export const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/buatfilm');
     console.log('✅ MongoDB connected');
@@ -27,5 +27,3 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
-module.exports = { Order, connectDB };

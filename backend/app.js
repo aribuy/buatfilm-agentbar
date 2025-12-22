@@ -1,8 +1,13 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { connectDB } = require('./database');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { connectDB } from './database.js';
+import ordersRouter from './routes/orders-new.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -15,7 +20,7 @@ connectDB();
 app.use(express.static('../frontend/dist'));
 
 // API routes
-app.use('/api/orders', require('./routes/orders-new.js'));
+app.use('/api/orders', ordersRouter);
 
 // Serve React app
 app.get('*', (req, res, next) => {
