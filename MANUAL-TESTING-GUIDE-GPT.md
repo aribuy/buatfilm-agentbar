@@ -300,28 +300,158 @@ ssh buatfilm-server "pm2 logs payment-api --lines 50 --nostream"
 
 ## 📊 Test Data & Credentials
 
-### Test Customer Data
+### Midtrans Sandbox Test Credentials
 
-**Use these test profiles for consistent testing:**
+**IMPORTANT:** These are the official Midtrans Sandbox test credentials from https://docs.midtrans.com/docs/testing-payment-on-sandbox
 
+> ⚠️ **WARNING:** Do NOT attempt to pay with real payment on Sandbox transactions. Sandbox transactions should only be paid with the Sandbox Payment Simulator/Credentials explained below. Midtrans will not be able to help recover any real-world payment funds if you do so.
+
+---
+
+#### 1. GoPay Payment Test
+
+**How to Test:**
+- On **mobile**: You are automatically redirected to GoPay Simulator
+- On **desktop**: QR Code image is displayed
+  - Copy the QR Code image URL
+  - Paste into [QRIS Simulator](https://simulator.sandbox.midtrans.com/qris)
+
+**Notes:**
+- Payment will succeed immediately in Sandbox
+- No real GoPay account needed
+- No real payment required
+
+**Test Data:**
 ```
 Test Profile 1 (GoPay):
   Nama:  Test GoPay User
   Phone: 081234567890
   Email: test-gopay@example.com
+```
 
-Test Profile 2 (BCA):
+---
+
+#### 2. BCA Virtual Account Test
+
+**How to Test:**
+1. Select BCA Virtual Account payment method
+2. Midtrans will generate a dummy BCA VA number
+3. Copy the VA number (format: `88000XXXXXXXXX`)
+4. Use the [BCA Virtual Account Simulator](https://simulator.sandbox.midtrans.com/bca-va)
+5. Enter the VA number and complete payment
+
+**Test Data:**
+```
+Test Profile 2 (BCA VA):
   Nama:  Test BCA User
   Phone: 081987654321
   Email: test-bca@example.com
+```
 
+**Expected Behavior:**
+- VA number displayed immediately after order
+- Payment can be simulated via BCA VA simulator
+- Webhook will be triggered after simulation
+
+---
+
+#### 3. QRIS Payment Test
+
+**How to Test:**
+1. Select QRIS payment method
+2. Midtrans will display QR Code image
+3. Copy the QR Code image URL
+4. Paste into [QRIS Simulator](https://simulator.sandbox.midtrans.com/qris)
+5. Complete payment simulation
+
+**Test Data:**
+```
 Test Profile 3 (QRIS):
   Nama:  Test QRIS User
   Phone: 081567890123
   Email: test-qris@example.com
 ```
 
-### Midtrans Status Codes
+> ⚠️ **Note:** There is currently an intermittent issue with QRIS simulator affecting some older merchant accounts. If QRIS simulator doesn't work for you, please reach out to support@midtrans.com
+
+---
+
+#### 4. Credit/Debit Card Test
+
+**Test Cards for Sandbox:**
+
+**General Cards (VISA):**
+| Card Number | Description | Result |
+|-------------|-------------|--------|
+| 4811 1111 1111 1114 | Accept Transaction | ✅ Success |
+| 4911 1111 1111 1113 | Denied by Bank | ❌ Failed |
+| 4411 1111 1111 1118 | Accept (No 3DS) | ✅ Success |
+| 4611 1111 1111 1116 | Denied by FDS | ❌ Failed |
+
+**General Cards (MASTERCARD):**
+| Card Number | Description | Result |
+|-------------|-------------|--------|
+| 5211 1111 1111 1117 | Accept Transaction | ✅ Success |
+| 5111 1111 1111 1118 | Denied by Bank | ❌ Failed |
+
+**Card Payment Details:**
+| Input | Value |
+|-------|-------|
+| Expiry Month | `01` (or any month) |
+| Expiry Year | `2025` (or any future year) |
+| CVV | `123` |
+| OTP/3DS | `112233` |
+
+**BCA-Specific Cards (for testing bank-specific features):**
+| Card Number | Description |
+|-------------|-------------|
+| 4773 7760 5705 1650 | BCA VISA - Full Authentication (Accept) |
+| 5229 9031 3685 3172 | BCA MASTERCARD - Full Authentication (Accept) |
+| 4773 7738 1098 1190 | BCA VISA - Attempted Authentication (Accept) |
+| 5229 9073 6430 3610 | BCA MASTERCARD - Attempted Authentication (Accept) |
+| 4773 7752 0201 1809 | BCA VISA - Denied |
+| 5229 9034 0542 3830 | BCA MASTERCARD - Denied |
+
+---
+
+#### 5. Bank Transfer - Other Banks
+
+**Mandiri Bill Payment:**
+- Use [Mandiri Bill Payment Simulator](https://simulator.sandbox.midtrans.com/mandiri-bill)
+- Input company code as bill code
+- Input Mandiri Bill number as bill key
+
+**BNI Virtual Account:**
+- Use [BNI Virtual Account Simulator](https://simulator.sandbox.midtrans.com/bni-va)
+- Enter the generated BNI VA number
+
+**BRI Virtual Account:**
+- Use [BRI Virtual Account Simulator](https://simulator.sandbox.midtrans.com/bri-va)
+- Open API and choose BRI as the bank
+
+**CIMB Virtual Account:**
+- Use [CIMB Virtual Account Simulator](https://simulator.sandbox.midtrans.com/cimb-va)
+- Open API and choose CIMB as the bank
+
+**Permata Virtual Account:**
+- Use [Permata Virtual Account Simulator](https://simulator.sandbox.midtrans.com/permata-va)
+- Open API and choose Permata as the bank
+
+---
+
+#### 6. E-Wallet (Other than GoPay)
+
+**ShopeePay:**
+- On **mobile**: Automatically redirected to ShopeePay Simulator
+- On **desktop**: QR Code displayed
+  - Copy QR Code image URL
+  - Paste into [QRIS Simulator](https://simulator.sandbox.midtrans.com/qris)
+
+**Note:** For GoPay Tokenization testing phone numbers in Sandbox, refer to Midtrans documentation.
+
+---
+
+### Midtrans Transaction Status Codes
 
 **Important status codes to recognize:**
 
@@ -329,11 +459,23 @@ Test Profile 3 (QRIS):
 |-------------|-------------------|------------|---------|
 | 200 | capture | PAID | Payment successful |
 | 200 | settlement | PAID | Payment settled |
+| 200 | pending | PENDING_PAYMENT | Waiting for payment |
 | 201 | pending | PENDING_PAYMENT | Waiting for payment |
 | 202 | deny | FAILED | Payment denied |
 | 202 | cancel | FAILED | Payment cancelled |
 | 202 | expire | EXPIRED | Payment expired |
 | 404 | - | FAILED | Transaction not found |
+
+**Status Workflow:**
+```
+CREATED → PENDING_PAYMENT → PAID (final)
+                  ↓
+                FAILED
+                  ↓
+                EXPIRED
+```
+
+---
 
 ---
 
