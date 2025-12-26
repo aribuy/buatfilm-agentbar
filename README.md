@@ -11,8 +11,8 @@ Platform pembelajaran lengkap untuk membuat film menggunakan AI tools.
 ### 🛠️ Tech Stack
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS
 - **Backend**: Node.js + Express
-- **Payment**: Xendit + Midtrans
-- **Database**: MongoDB/PostgreSQL
+- **Payment**: Midtrans (Snap UI)
+- **Database**: PostgreSQL (production-ready)
 
 ### 📦 Development
 
@@ -64,6 +64,5 @@ npm run build
 
 ```env
 VITE_API_URL=https://api.agentbar.ai
-VITE_XENDIT_PUBLIC_KEY=your_xendit_public_key
 VITE_MIDTRANS_CLIENT_KEY=your_midtrans_client_key
 ```
