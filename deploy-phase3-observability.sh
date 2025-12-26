@@ -149,7 +149,7 @@ echo ""
 echo "=================================================="
 echo "Step 5: Uploading Files to Server"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   mkdir -p lib routes logs
 "
@@ -180,7 +180,7 @@ echo ""
 echo "=================================================="
 echo "Step 7: Creating Logs Directory"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   mkdir -p logs
   chown www-data:www-data logs
@@ -192,7 +192,7 @@ echo ""
 echo "=================================================="
 echo "Step 8: Restarting with PM2 Ecosystem"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   pm2 delete payment-api 2>/dev/null || true
   pm2 start ecosystem.config.js
@@ -217,7 +217,7 @@ echo ""
 echo "=================================================="
 echo "Step 10: PM2 Monitoring Setup"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo '=== PM2 Status ==='
   pm2 status
   echo ''

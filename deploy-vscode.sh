@@ -14,12 +14,12 @@ cd ..
 
 # Deploy to server
 echo "🚀 Uploading to server..."
-scp -r frontend/dist/* root@srv941062.hstgr.cloud:/var/www/buatfilm.agentbar.ai/
+scp -i ~/.ssh/agentbar_key -r frontend/dist/* root@srv941062.hstgr.cloud:/var/www/buatfilm.agentbar.ai/
 
 # Set permissions
 echo "🔧 Setting permissions..."
-ssh root@srv941062.hstgr.cloud "chown -R www-data:www-data /var/www/buatfilm.agentbar.ai/"
-ssh root@srv941062.hstgr.cloud "chmod -R 755 /var/www/buatfilm.agentbar.ai/"
+ssh -i ~/.ssh/agentbar_key root@srv941062.hstgr.cloud "chown -R www-data:www-data /var/www/buatfilm.agentbar.ai/"
+ssh -i ~/.ssh/agentbar_key root@srv941062.hstgr.cloud "chmod -R 755 /var/www/buatfilm.agentbar.ai/"
 
 echo "✅ Deployment complete!"
 echo "🌐 Visit: https://buatfilm.agentbar.ai"

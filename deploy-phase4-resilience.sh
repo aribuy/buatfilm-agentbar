@@ -187,7 +187,7 @@ echo ""
 echo "=================================================="
 echo "Step 4: Uploading Worker to Server"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "mkdir -p /var/www/api/workers"
+ssh buatfilm-server "mkdir -p /var/www/api/workers"
 scp backend/workers/notification-worker.js root@srv941062.hstgr.cloud:/var/www/api/workers/
 echo "✅ Worker uploaded"
 echo ""
@@ -195,7 +195,7 @@ echo ""
 echo "=================================================="
 echo "Step 5: Starting Notification Worker"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   pm2 start workers/notification-worker.js --name notification-worker
   pm2 save
@@ -206,7 +206,7 @@ echo ""
 echo "=================================================="
 echo "Step 6: Verification"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo '=== PM2 Status ==='
   pm2 status
   echo ''
@@ -226,7 +226,7 @@ echo "   ✅ Retry with exponential backoff"
 echo "   ✅ Dead Letter Queue (DLQ)"
 echo ""
 echo "🔧 Services Running:"
-ssh root@srv941062.hstgr.cloud "pm2 status"
+ssh buatfilm-server "pm2 status"
 echo ""
 echo "✅ ALL PHASES COMPLETE!"
 echo "🎉 System is now Production-Ready!"

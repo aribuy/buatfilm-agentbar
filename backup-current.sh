@@ -27,14 +27,14 @@ mkdir -p "$LOCAL_BACKUP_DIR"
 echo "=================================================="
 echo "Step 1: Creating Remote Backup Directory"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "mkdir -p $BACKUP_DIR"
+ssh buatfilm-server "mkdir -p $BACKUP_DIR"
 echo "✅ Remote backup directory created"
 echo ""
 
 echo "=================================================="
 echo "Step 2: Backing Up SQLite Database"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   if [ -f orders.db ]; then
     cp orders.db $BACKUP_DIR/orders.db
@@ -50,7 +50,7 @@ echo ""
 echo "=================================================="
 echo "Step 3: Backing Up Environment Variables"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   if [ -f .env ]; then
     cp .env $BACKUP_DIR/.env
@@ -66,7 +66,7 @@ echo ""
 echo "=================================================="
 echo "Step 4: Backing Up Backend Code"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www
   if [ -d api ]; then
     tar -czf $BACKUP_DIR/api-backup.tar.gz api/
@@ -81,7 +81,7 @@ echo ""
 echo "=================================================="
 echo "Step 5: Backing Up Frontend"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www
   if [ -d buatfilm.agentbar.ai ]; then
     tar -czf $BACKUP_DIR/frontend-backup.tar.gz buatfilm.agentbar.ai/
@@ -96,7 +96,7 @@ echo ""
 echo "=================================================="
 echo "Step 6: Backing Up PM2 Configuration"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   pm2 save --force
   cp ~/.pm2/dump.pm2 $BACKUP_DIR/dump.pm2 2>/dev/null || true
   echo \"✅ PM2 configuration backed up\"
@@ -106,7 +106,7 @@ echo ""
 echo "=================================================="
 echo "Step 7: Auditing Current Orders"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   if [ -f orders.db ]; then
     echo \"=== Orders Summary ===\"
@@ -140,7 +140,7 @@ echo ""
 echo "=================================================="
 echo "Step 8: Checking PM2 Status"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   pm2 status
 " > "$LOCAL_BACKUP_DIR/pm2-status.txt"
 echo "✅ PM2 status saved to: $LOCAL_BACKUP_DIR/pm2-status.txt"
@@ -177,7 +177,7 @@ echo ""
 echo "=================================================="
 echo "Step 12: System Information"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo '=== System Info ==='
   uname -a
   echo ''

@@ -35,7 +35,7 @@ echo ""
 echo "=================================================="
 echo "Step 1: Installing PostgreSQL"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo 'Updating packages...'
   apt update
   echo 'Installing PostgreSQL...'
@@ -51,7 +51,7 @@ echo ""
 echo "=================================================="
 echo "Step 2: Creating Database and User"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   sudo -u postgres psql <<EOF
 -- Create database
 CREATE DATABASE buatfilm_production;
@@ -222,7 +222,7 @@ SQLEOF
 scp /tmp/postgres-schema.sql root@srv941062.hstgr.cloud:/tmp/schema.sql
 
 # Create tables
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   psql -U buatfilm_user -d buatfilm_production -f /tmp/schema.sql
   echo '✅ PostgreSQL schema created'
 "
@@ -340,7 +340,7 @@ echo ""
 echo "=================================================="
 echo "Step 5: Running Data Migration"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   PG_PASSWORD='$PG_PASSWORD' node migrate-to-postgres.js
 "
@@ -349,7 +349,7 @@ echo ""
 echo "=================================================="
 echo "Step 6: Verifying Migration"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo '=== Orders in PostgreSQL ==='
   psql -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
   echo ''
@@ -415,7 +415,7 @@ echo ""
 echo "=================================================="
 echo "Step 8: Updating .env File"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   echo '' >> .env
   echo '# PostgreSQL Configuration' >> .env
@@ -436,7 +436,7 @@ echo "=================================================="
 scp backend/database-postgres.js root@srv941062.hstgr.cloud:/var/www/api/database.js
 
 # Update payment-server.js to use PostgreSQL
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   # Backup current
   cp database.js database-sqlite.js.bak
@@ -448,7 +448,7 @@ echo "=================================================="
 echo "Step 10: ⚠️  DOWNTIME STARTING"
 echo "=================================================="
 echo "⏸️  Stopping PM2 processes..."
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   pm2 stop payment-api
 "
 echo "✅ Services stopped"
@@ -457,7 +457,7 @@ echo ""
 echo "=================================================="
 echo "Step 11: Installing pg Node Module"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   npm install pg
   echo '✅ pg module installed'
@@ -467,7 +467,7 @@ echo ""
 echo "=================================================="
 echo "Step 12: Starting Services with PostgreSQL"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   cd /var/www/api
   pm2 start payment-server.js --name payment-api
   pm2 save
@@ -484,7 +484,7 @@ echo ""
 echo "=================================================="
 echo "Step 14: Verification"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   pm2 status
   echo ''
   echo '=== Recent Logs ==='
@@ -502,7 +502,7 @@ echo ""
 echo "=================================================="
 echo "Step 16: Final Verification Queries"
 echo "=================================================="
-ssh root@srv941062.hstgr.cloud "
+ssh buatfilm-server "
   echo '=== Total Orders ==='
   psql -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
   echo ''
