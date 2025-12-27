@@ -16,21 +16,24 @@ Platform pembelajaran lengkap untuk membuat film menggunakan AI tools.
 
 ### Current Status
 - ✅ **Backend V2 Code Ready**: Tenant-aware payment server
-- ⏳ **Database Setup**: Pending Supabase configuration
+- ✅ **Deployment Scripts Ready**: Automated PostgreSQL setup & backend deployment
+- ⏳ **Database Setup**: Ready to deploy on db.agentbar.ai
 - ⏳ **Deployment**: Parallel mode (V1 + V2 running)
 - ✅ **Production Safe**: Zero-downtime migration strategy
 
 ### Quick Links
+- 🚀 [Quick Start Guide](./QUICK-START.md) - Deploy in 2 steps!
 - 📖 [Implementation Summary](./IMPLEMENTATION-SUMMARY.md) - Complete overview
-- 🔧 [Supabase Setup Guide](./database/SUPABASE-SETUP-GUIDE.md) - Database configuration
+- 🔧 [Deployment Guide](./database/DEPLOYMENT-GUIDE.md) - Step-by-step deployment
+- 🗄️ [Database Setup Script](./database/setup-postgres.sh) - Automated PostgreSQL setup
 - 🏗️ [Multi-Domain Architecture](./docs/MULTI-DOMAIN-ARCHITECTURE.md) - Platform design
-- 🔄 [Migration to Tenant System](./database/MIGRATE-TO-TENANT.md) - Step-by-step guide
 
 ### What's Changing?
-- **Backend**: SQLite → PostgreSQL (Supabase)
+- **Backend**: SQLite → PostgreSQL (Self-hosted on db.agentbar.ai)
 - **Architecture**: Single-tenant → Multi-tenant SaaS
 - **Config**: Hardcoded → Database-driven per tenant
 - **Scalability**: Single product → Unlimited tenants
+- **Infrastructure**: 1 VPS → 2 VPS (App + Database separated)
 
 **Impact**: BuatFilm production remains **STABLE** throughout migration! 🛡️
 
