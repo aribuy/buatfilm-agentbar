@@ -91,8 +91,22 @@ const CheckoutPage: React.FC = () => {
               
               {/* Customer Info */}
               <div className="mb-8">
-                <h3 className="text-xl font-bold mb-4">📝 Data Diri</h3>
-                
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold">📝 Data Diri</h3>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({
+                      ...formData,
+                      name: 'Test Webhook',
+                      phone: '81234567890',
+                      email: 'webhook@test.com'
+                    })}
+                    className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg hover:bg-yellow-200 transition-colors"
+                  >
+                    🧪 Auto-Fill Test Data
+                  </button>
+                </div>
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Nama Lengkap *</label>

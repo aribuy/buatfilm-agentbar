@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PaymentConfirmation from '../components/PaymentConfirmation';
+import PaymentInstructions from '../components/PaymentInstructions';
 import { generateOrderId, generateOrderToken, generateUniqueCode, calculateTotal, Order, OrderStatus } from '../utils/orderSystem';
 import { createPayment } from '../utils/paymentService';
+import { pollOrderStatus } from '../utils/orderService';
 
 interface FormData {
   name: string;
@@ -51,15 +53,21 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
 
 
 
+  const handlePaymentComplete = () => {
+    if (orderData) {
+      onOrderCreated(orderData);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const basePrice = 99000;
       const uniqueCode = generateUniqueCode();
       const now = new Date();
-      
+
       const order: Order = {
         id: generateOrderId(),
         token: generateOrderToken(),
@@ -77,26 +85,53 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
           { status: 'pending' as OrderStatus, timestamp: now }
         ]
       };
-      
+
       // Create payment
       const paymentData = {
         orderId: order.id,
         amount: order.totalAmount,
         email: order.email,
         phone: order.phone,
-        name: order.customerName
+        name: order.customerName,
+        paymentMethod: formData.paymentMethod // Send selected payment method
       };
-      
+
       const paymentResult = await createPayment(paymentData);
-      
-      if (paymentResult.success && paymentResult.paymentUrl) {
-        // Only redirect if we have real payment URL
-        window.open(paymentResult.paymentUrl, '_blank');
+
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.message || 'Payment creation failed');
       }
-      
-      // Always create order for demo
-      onOrderCreated(order);
-      
+
+      // Store order data AND payment URL
+      order.paymentUrl = paymentResult.paymentUrl;
+      setOrderData(order);
+
+      // For e-wallets (GoPay, ShopeePay, OVO, DANA, LinkAja) - direct redirect
+      const ewalletMethods = ['gopay', 'shopeepay', 'ovo', 'dana', 'linkaja'];
+      // For bank transfers - also redirect to Midtrans to see actual VA number
+      const bankMethods = ['bca', 'bni', 'bri', 'mandiri', 'bsi', 'jago'];
+
+      if (ewalletMethods.includes(formData.paymentMethod) || bankMethods.includes(formData.paymentMethod)) {
+        // Redirect directly to Midtrans payment page to see actual VA/QR number
+        window.location.href = paymentResult.paymentUrl;
+      } else if (formData.paymentMethod === 'qris') {
+        // For QRIS - show custom payment instructions modal with iframe
+        setShowPaymentInstructions(true);
+
+        // Start polling for payment status
+        pollOrderStatus(order.id, handlePaymentComplete, 60, 5000);
+
+        setIsSubmitting(false);
+      } else {
+        // Fallback - show custom payment instructions modal
+        setShowPaymentInstructions(true);
+
+        // Start polling for payment status
+        pollOrderStatus(order.id, handlePaymentComplete, 60, 5000);
+
+        setIsSubmitting(false);
+      }
+
     } catch (error) {
       console.error('Order error:', error);
       alert('Terjadi kesalahan saat membuat pesanan. Silakan coba lagi.');
@@ -172,8 +207,22 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
               
               {/* Customer Data */}
               <div className="mb-8">
-                <h3 className="text-xl font-bold mb-4">📝 Data Diri</h3>
-                
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold">📝 Data Diri</h3>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({
+                      ...formData,
+                      name: 'Test Webhook',
+                      phone: '81234567890',
+                      email: 'webhook@test.com'
+                    })}
+                    className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg hover:bg-yellow-200 transition-colors"
+                  >
+                    🧪 Auto-Fill Test Data
+                  </button>
+                </div>
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Nama Lengkap *</label>
@@ -185,7 +234,7 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium mb-2">WhatsApp *</label>
                     <div className="flex">
@@ -201,7 +250,7 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium mb-2">Email *</label>
                     <input
@@ -452,8 +501,22 @@ const IntegratedCheckout: React.FC<IntegratedCheckoutProps> = ({ onOrderCreated,
           </div>
         </div>
       </div>
+
+      {/* Custom Payment Instructions Modal */}
+      {showPaymentInstructions && orderData && (
+        <PaymentInstructions
+          paymentMethod={formData.paymentMethod}
+          orderData={{
+            orderId: orderData.id,
+            amount: orderData.totalAmount,
+            customerName: orderData.customerName
+          }}
+          paymentUrl={orderData.paymentUrl}
+          onClose={() => setShowPaymentInstructions(false)}
+        />
+      )}
     </div>
   );
 };
 
-export default IntegratedCheckout;
+export default IntegratedCheckout;// Force rebuild - Fri Dec 26 19:40:19 WIB 2025

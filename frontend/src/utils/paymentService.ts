@@ -1,7 +1,7 @@
 export const createPayment = async (orderData: any) => {
   try {
-    // Try real API first
-    const response = await fetch('http://srv941062.hstgr.cloud:3002/payment/create', {
+    // Call production API via nginx proxy (HTTPS)
+    const response = await fetch('https://buatfilm.agentbar.ai/payment/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -9,22 +9,33 @@ export const createPayment = async (orderData: any) => {
         amount: orderData.amount,
         email: orderData.email,
         phone: orderData.phone,
-        name: orderData.name
+        name: orderData.name,
+        paymentMethod: orderData.paymentMethod // Send payment method to backend
       })
     });
-    
+
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      console.log('✅ Payment API response:', data);
+
+      // Return with redirect URL for Midtrans Snap
+      return {
+        success: true,
+        paymentUrl: data.redirectUrl || data.token, // Midtrans Snap token/URL
+        token: data.token,
+        message: 'Payment created successfully'
+      };
     }
-    throw new Error('API not available');
+
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
   } catch (error) {
-    // Return fallback without URL for demo
-    console.log('Backend not running - showing payment instructions');
-    
+    console.error('❌ Payment API error:', error);
+
+    // Return error - don't fallback to demo mode in production
     return {
-      success: true,
-      paymentUrl: null, // No URL = show instructions
-      message: 'Backend not running - demo mode'
+      success: false,
+      paymentUrl: null,
+      message: `Failed to create payment: ${error.message}`
     };
   }
 };

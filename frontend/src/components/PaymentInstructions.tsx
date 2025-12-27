@@ -7,13 +7,15 @@ interface PaymentInstructionsProps {
     amount: number;
     customerName: string;
   };
+  paymentUrl?: string; // Midtrans payment URL for QR display
   onClose: () => void;
 }
 
-const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({ 
-  paymentMethod, 
-  orderData, 
-  onClose 
+const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
+  paymentMethod,
+  orderData,
+  paymentUrl,
+  onClose
 }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -31,12 +33,27 @@ const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
   const renderQRISInstructions = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="w-48 h-48 bg-gray-200 mx-auto mb-4 flex items-center justify-center">
-          <span className="text-gray-500">QR Code akan muncul di sini</span>
-        </div>
-        <button className="text-blue-600 underline">Download QR Code</button>
+        {paymentUrl ? (
+          <iframe
+            src={paymentUrl}
+            className="w-full h-96 border-0"
+            title="Midtrans Payment"
+          />
+        ) : (
+          <div className="w-48 h-48 bg-gray-200 mx-auto mb-4 flex items-center justify-center">
+            <span className="text-gray-500">QR Code akan muncul di sini</span>
+          </div>
+        )}
+        {paymentUrl && (
+          <button
+            onClick={() => window.open(paymentUrl, '_blank')}
+            className="text-blue-600 underline"
+          >
+            Buka di tab baru
+          </button>
+        )}
       </div>
-      
+
       <div className="bg-blue-50 p-4 rounded-lg">
         <h4 className="font-semibold mb-2">Cara Pembayaran QRIS:</h4>
         <ol className="list-decimal list-inside space-y-1 text-sm">
@@ -106,31 +123,50 @@ const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
   const renderEWalletInstructions = () => {
     const walletNames = {
       gopay: 'GoPay',
-      dana: 'DANA', 
+      dana: 'DANA',
       ovo: 'OVO',
       shopeepay: 'ShopeePay',
       linkaja: 'LinkAja'
     };
 
+    const walletName = walletNames[paymentMethod as keyof typeof walletNames];
+
+    // For all e-wallets including GoPay, redirect to Midtrans page
     return (
       <div className="space-y-6">
         <div className="text-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
-          <h4 className="font-bold text-lg mb-2">Pembayaran {walletNames[paymentMethod as keyof typeof walletNames]}</h4>
-          <p className="text-gray-600 mb-4">Anda akan diarahkan ke aplikasi {walletNames[paymentMethod as keyof typeof walletNames]}</p>
-          <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold">
-            Buka {walletNames[paymentMethod as keyof typeof walletNames]}
-          </button>
+          <h4 className="font-bold text-lg mb-2">Pembayaran {walletName}</h4>
+          <p className="text-gray-600 mb-4">
+            Anda akan diarahkan ke halaman pembayaran {walletName}
+          </p>
+          {paymentUrl && (
+            <button
+              onClick={() => (window.location.href = paymentUrl)}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+            >
+              Lanjut ke Pembayaran {walletName} →
+            </button>
+          )}
         </div>
 
         <div className="bg-green-50 p-4 rounded-lg">
           <h4 className="font-semibold mb-2">Langkah Pembayaran:</h4>
           <ol className="list-decimal list-inside space-y-1 text-sm">
-            <li>Klik tombol "Buka {walletNames[paymentMethod as keyof typeof walletNames]}" di atas</li>
-            <li>Login ke akun {walletNames[paymentMethod as keyof typeof walletNames]} Anda</li>
+            <li>Klik tombol "Lanjut ke Pembayaran {walletName}" di atas</li>
+            <li>QR code {walletName} akan ditampilkan oleh Midtrans</li>
+            <li>Buka aplikasi {walletName} di HP Anda</li>
+            <li>Scan QR code yang muncul</li>
             <li>Konfirmasi pembayaran sebesar {formatCurrency(orderData.amount)}</li>
-            <li>Masukkan PIN atau verifikasi biometrik</li>
-            <li>Pembayaran selesai</li>
+            <li>Masukkan PIN {walletName}</li>
+            <li>Pembayaran selesai, Anda akan kembali ke halaman ini</li>
           </ol>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Tips:</strong> Setelah pembayaran berhasil, halaman ini akan otomatis terupdate.
+            Jika tidak, silakan refresh halaman ini.
+          </p>
         </div>
       </div>
     );

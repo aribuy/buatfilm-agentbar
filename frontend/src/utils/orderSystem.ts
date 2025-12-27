@@ -58,6 +58,7 @@ export interface Order {
   totalAmount: number;
   status: OrderStatus;
   paymentMethod: string;
+  paymentUrl?: string; // Optional: Midtrans payment URL
   createdAt: Date;
   statusHistory: Array<{
     status: OrderStatus;
