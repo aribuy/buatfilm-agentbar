@@ -146,7 +146,7 @@ app.post('/payment/create', resolveTenant, validateOrder, asyncHandler(async (re
 
     console.log(`[${req.tenantSlug}] Order created: ${orderId}`);
 
-    // Send notifications with tenant email config
+    // Send notifications with tenant email config (non-blocking)
     const orderData = {
       id: orderId,
       customerName: name,
@@ -160,8 +160,14 @@ app.post('/payment/create', resolveTenant, validateOrder, asyncHandler(async (re
       tenantEmailReplyTo: req.tenant.email_reply_to
     };
 
-    await sendWhatsAppMessage(orderData);
-    await sendOrderConfirmationEmail(orderData);
+    // Send notifications asynchronously - don't block response
+    sendWhatsAppMessage(orderData).catch(err => {
+      console.error(`[${req.tenantSlug}] WhatsApp error:`, err.message);
+    });
+
+    sendOrderConfirmationEmail(orderData).catch(err => {
+      console.error(`[${req.tenantSlug}] Email error:`, err.message);
+    });
 
     res.json({
       success: true,

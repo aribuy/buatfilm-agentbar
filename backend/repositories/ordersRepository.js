@@ -12,37 +12,65 @@ class OrdersRepository {
   async createOrder(orderData) {
     const { id, customerName, email, phone, amount, paymentMethod, tenantId = null } = orderData;
 
-    const query = `
-      INSERT INTO orders (
-        order_id,
-        customer_name,
-        email,
-        phone,
-        gross_amount,
-        payment_method,
-        payment_status,
-        tenant_id
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7)
-      RETURNING *
-    `;
+    const client = await pool.connect();
 
     try {
-      const result = await pool.query(query, [
+      await client.query('BEGIN');
+
+      // Find or create customer
+      let customerResult;
+      const customerQuery = `
+        SELECT id FROM customers
+        WHERE tenant_id = $1 AND email = $2
+      `;
+      customerResult = await client.query(customerQuery, [tenantId, email]);
+
+      let customerId;
+      if (customerResult.rows.length > 0) {
+        customerId = customerResult.rows[0].id;
+      } else {
+        // Create new customer
+        const insertCustomerQuery = `
+          INSERT INTO customers (tenant_id, email, phone, name)
+          VALUES ($1, $2, $3, $4)
+          RETURNING id
+        `;
+        const newCustomer = await client.query(insertCustomerQuery, [tenantId, email, phone, customerName]);
+        customerId = newCustomer.rows[0].id;
+      }
+
+      // Create order
+      const orderQuery = `
+        INSERT INTO orders (
+          tenant_id,
+          customer_id,
+          order_id,
+          gross_amount,
+          payment_method,
+          payment_status
+        )
+        VALUES ($1, $2, $3, $4, $5, 'pending')
+        RETURNING *
+      `;
+
+      const result = await client.query(orderQuery, [
+        tenantId,
+        customerId,
         id,
-        customerName,
-        email,
-        phone,
         amount,
-        paymentMethod,
-        tenantId
+        paymentMethod
       ]);
 
-      console.log(`[PostgreSQL] Order created: ${id}`);
+      await client.query('COMMIT');
+
+      console.log(`[PostgreSQL] Order created: ${id} (customer: ${customerId})`);
       return result.rows[0];
     } catch (error) {
+      await client.query('ROLLBACK');
       console.error('[PostgreSQL] Create order error:', error);
       throw error;
+    } finally {
+      client.release();
     }
   }
 
@@ -52,17 +80,18 @@ class OrdersRepository {
   async getOrder(orderId) {
     const query = `
       SELECT
-        id,
-        order_id,
-        customer_name,
-        email,
-        phone,
-        gross_amount::text as amount, -- Return as string for compatibility
-        payment_method,
-        payment_status as status,
-        created_at
-      FROM orders
-      WHERE order_id = $1
+        o.id,
+        o.order_id,
+        c.name as customer_name,
+        c.email,
+        c.phone,
+        o.gross_amount::text as amount, -- Return as string for compatibility
+        o.payment_method,
+        o.payment_status as status,
+        o.created_at
+      FROM orders o
+      LEFT JOIN customers c ON o.customer_id = c.id
+      WHERE o.order_id = $1
     `;
 
     try {
@@ -108,25 +137,26 @@ class OrdersRepository {
   async getAllOrders(tenantId = null) {
     let query = `
       SELECT
-        id,
-        order_id,
-        customer_name,
-        email,
-        phone,
-        gross_amount::text as amount,
-        payment_method,
-        payment_status as status,
-        created_at
-      FROM orders
+        o.id,
+        o.order_id,
+        c.name as customer_name,
+        c.email,
+        c.phone,
+        o.gross_amount::text as amount,
+        o.payment_method,
+        o.payment_status as status,
+        o.created_at
+      FROM orders o
+      LEFT JOIN customers c ON o.customer_id = c.id
     `;
 
     const params = [];
 
     if (tenantId) {
-      query += ' WHERE tenant_id = $1 ORDER BY created_at DESC';
+      query += ' WHERE o.tenant_id = $1 ORDER BY o.created_at DESC';
       params.push(tenantId);
     } else {
-      query += ' ORDER BY created_at DESC';
+      query += ' ORDER BY o.created_at DESC';
     }
 
     try {
