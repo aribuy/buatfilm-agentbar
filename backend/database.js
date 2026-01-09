@@ -1,79 +1,77 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 
-class Database {
-  constructor() {
-    this.db = new sqlite3.Database(path.join(__dirname, 'orders.db'));
-    this.init();
+const pool = new Pool({
+  host: process.env.PG_HOST || 'localhost',
+  database: process.env.PG_DATABASE || 'buatfilm_production',
+  user: process.env.PG_USER || 'buatfilm_user',
+  password: process.env.PG_PASSWORD,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+module.exports = {
+  query: async (text, params) => {
+    const start = Date.now();
+    try {
+      const res = await pool.query(text, params);
+      const duration = Date.now() - start;
+      // console.log('Executed query', { text, duration, rows: res.rowCount });
+      return res;
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
+  },
+
+  get: async (text, params) => {
+    const res = await pool.query(text, params);
+    return res.rows[0];
+  },
+
+  all: async (text, params) => {
+    const res = await pool.query(text, params);
+    return res.rows;
+  },
+
+  run: async (text, params) => {
+    await pool.query(text, params);
+  },
+
+  raw: async (text) => {
+    return pool.query(text);
+  },
+
+  // Helper methods for orders
+  createOrder: async (orderData) => {
+    const { id, customerName, email, phone, amount, paymentMethod, paymentUrl, token } = orderData;
+    await pool.query(
+      `INSERT INTO payment_orders (id, customer_name, email, phone, amount, payment_method, payment_url, token)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [id, customerName, email, phone, amount, paymentMethod, paymentUrl || null, token || null]
+    );
+    return { id, ...orderData };
+  },
+
+  getOrder: async (orderId) => {
+    const res = await pool.query(
+      'SELECT * FROM payment_orders WHERE id = $1',
+      [orderId]
+    );
+    return res.rows[0];
+  },
+
+  updateOrderStatus: async (orderId, status) => {
+    await pool.query(
+      'UPDATE payment_orders SET status = $1, updated_at = NOW() WHERE id = $2',
+      [status, orderId]
+    );
+  },
+
+  getAllOrders: async () => {
+    const res = await pool.query(
+      'SELECT * FROM payment_orders ORDER BY created_at DESC'
+    );
+    return res.rows;
   }
-
-  init() {
-    this.db.serialize(() => {
-      this.db.run(`
-        CREATE TABLE IF NOT EXISTS orders (
-          id TEXT PRIMARY KEY,
-          customer_name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT NOT NULL,
-          amount INTEGER NOT NULL,
-          payment_method TEXT NOT NULL,
-          status TEXT DEFAULT 'pending',
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `);
-    });
-  }
-
-  createOrder(orderData) {
-    return new Promise((resolve, reject) => {
-      const { id, customerName, email, phone, amount, paymentMethod } = orderData;
-      this.db.run(
-        `INSERT INTO orders (id, customer_name, email, phone, amount, payment_method) 
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, customerName, email, phone, amount, paymentMethod],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ id, ...orderData });
-        }
-      );
-    });
-  }
-
-  getOrder(orderId) {
-    return new Promise((resolve, reject) => {
-      this.db.get(
-        'SELECT * FROM orders WHERE id = ?',
-        [orderId],
-        (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        }
-      );
-    });
-  }
-
-  updateOrderStatus(orderId, status) {
-    return new Promise((resolve, reject) => {
-      this.db.run(
-        'UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [status, orderId],
-        function(err) {
-          if (err) reject(err);
-          else resolve(this.changes);
-        }
-      );
-    });
-  }
-
-  getAllOrders() {
-    return new Promise((resolve, reject) => {
-      this.db.all('SELECT * FROM orders ORDER BY created_at DESC', (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
-  }
-}
-
-module.exports = new Database();
+};

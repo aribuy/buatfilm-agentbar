@@ -129,7 +129,7 @@ echo "Step 3: Updating payment-server.js"
 echo "=================================================="
 
 # Backup original payment-server.js
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   cp payment-server.js payment-server.js.backup-phase0
   echo '✅ Backed up payment-server.js'
@@ -244,7 +244,7 @@ echo "=================================================="
 echo "Step 5: Uploading Files to Server"
 echo "=================================================="
 # Create migrations directory on server
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   mkdir -p migrations middleware
 "
@@ -259,7 +259,7 @@ echo ""
 echo "=================================================="
 echo "Step 6: Running Database Migration"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   echo 'Running migration...'
   node migrations/001_add_payment_events.js
@@ -269,7 +269,7 @@ echo ""
 echo "=================================================="
 echo "Step 7: Verifying Migration"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   echo '=== Tables in database ==='
   sqlite3 orders.db '.tables'
@@ -303,7 +303,7 @@ echo "=================================================="
 echo "📋 To complete Phase 1, you need to manually update payment-server.js:"
 echo ""
 echo "1. SSH to server:"
-echo "   ssh buatfilm-server"
+echo "   ssh root@srv941062.hstgr.cloud"
 echo ""
 echo "2. Edit payment-server.js:"
 echo "   nano /var/www/api/payment-server.js"
@@ -353,7 +353,7 @@ fi
 echo "=================================================="
 echo "Step 10: Final Verification"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   pm2 status
   echo ''
   echo '=== Recent Logs ==='

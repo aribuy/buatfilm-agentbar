@@ -21,7 +21,7 @@ export const createPayment = async (orderData: any) => {
       // Return with redirect URL for Midtrans Snap
       return {
         success: true,
-        paymentUrl: data.redirectUrl || data.token, // Midtrans Snap token/URL
+        paymentUrl: data.paymentUrl || data.redirectUrl || data.token, // Handle various backend versions
         token: data.token,
         message: 'Payment created successfully'
       };

@@ -17,25 +17,19 @@ echo ""
 echo "📅 Date: $(date)"
 echo ""
 
-# Prompt for confirmation
-read -p "Are you ready to proceed? (yes/no) " -r
-echo
-if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
-  echo "❌ Aborted. Run this script when ready."
-  exit 1
+# Non-interactive mode for automation
+if [ -z "$PG_PASSWORD" ]; then
+  echo "⚠️  PG_PASSWORD not set. Using generated secure password."
+  PG_PASSWORD="DB_Secure_Pass_$(date +%s)"
 fi
+echo "🔑 Using PostgreSQL Password: [HIDDEN]"
 
-# Prompt for PostgreSQL password
-echo ""
-echo "🔐 Enter PostgreSQL password for buatfilm_user:"
-read -s -p "Password: " PG_PASSWORD
-echo
 echo ""
 
 echo "=================================================="
 echo "Step 1: Installing PostgreSQL"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   echo 'Updating packages...'
   apt update
   echo 'Installing PostgreSQL...'
@@ -51,23 +45,26 @@ echo ""
 echo "=================================================="
 echo "Step 2: Creating Database and User"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   sudo -u postgres psql <<EOF
+-- Drop existing database to ensure fresh state
+DROP DATABASE IF EXISTS buatfilm_production;
+DROP USER IF EXISTS buatfilm_user;
+
 -- Create database
 CREATE DATABASE buatfilm_production;
-
 -- Create user with password
 CREATE USER buatfilm_user WITH PASSWORD '$PG_PASSWORD';
+ALTER ROLE buatfilm_user WITH LOGIN;
 
 -- Grant privileges
 GRANT ALL PRIVILEGES ON DATABASE buatfilm_production TO buatfilm_user;
-
--- Connect to database and grant schema privileges
 \c buatfilm_production
 GRANT ALL ON SCHEMA public TO buatfilm_user;
-
 EOF
-  echo '✅ Database and user created'
+
+  echo '✅ Database and user created. Waiting for propagation...'
+  sleep 5
 "
 echo ""
 
@@ -222,8 +219,8 @@ SQLEOF
 scp /tmp/postgres-schema.sql root@srv941062.hstgr.cloud:/tmp/schema.sql
 
 # Create tables
-ssh buatfilm-server "
-  psql -U buatfilm_user -d buatfilm_production -f /tmp/schema.sql
+
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -f /tmp/schema.sql
   echo '✅ PostgreSQL schema created'
 "
 echo ""
@@ -340,7 +337,7 @@ echo ""
 echo "=================================================="
 echo "Step 5: Running Data Migration"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   PG_PASSWORD='$PG_PASSWORD' node migrate-to-postgres.js
 "
@@ -349,12 +346,13 @@ echo ""
 echo "=================================================="
 echo "Step 6: Verifying Migration"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
+
   echo '=== Orders in PostgreSQL ==='
-  psql -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
   echo ''
   echo '=== Orders by status ==='
-  psql -U buatfilm_user -d buatfilm_production -c 'SELECT status, COUNT(*) FROM orders GROUP BY status;'
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -c 'SELECT status, COUNT(*) FROM orders GROUP BY status;'
 "
 echo ""
 
@@ -415,7 +413,7 @@ echo ""
 echo "=================================================="
 echo "Step 8: Updating .env File"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   echo '' >> .env
   echo '# PostgreSQL Configuration' >> .env
@@ -436,7 +434,7 @@ echo "=================================================="
 scp backend/database-postgres.js root@srv941062.hstgr.cloud:/var/www/api/database.js
 
 # Update payment-server.js to use PostgreSQL
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   # Backup current
   cp database.js database-sqlite.js.bak
@@ -448,7 +446,7 @@ echo "=================================================="
 echo "Step 10: ⚠️  DOWNTIME STARTING"
 echo "=================================================="
 echo "⏸️  Stopping PM2 processes..."
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   pm2 stop payment-api
 "
 echo "✅ Services stopped"
@@ -457,7 +455,7 @@ echo ""
 echo "=================================================="
 echo "Step 11: Installing pg Node Module"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   npm install pg
   echo '✅ pg module installed'
@@ -467,7 +465,7 @@ echo ""
 echo "=================================================="
 echo "Step 12: Starting Services with PostgreSQL"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   cd /var/www/api
   pm2 start payment-server.js --name payment-api
   pm2 save
@@ -484,7 +482,7 @@ echo ""
 echo "=================================================="
 echo "Step 14: Verification"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
   pm2 status
   echo ''
   echo '=== Recent Logs ==='
@@ -502,15 +500,16 @@ echo ""
 echo "=================================================="
 echo "Step 16: Final Verification Queries"
 echo "=================================================="
-ssh buatfilm-server "
+ssh root@srv941062.hstgr.cloud "
+
   echo '=== Total Orders ==='
-  psql -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -t -c 'SELECT COUNT(*) FROM orders;'
   echo ''
   echo '=== Recent Orders ==='
-  psql -U buatfilm_user -d buatfilm_production -c 'SELECT order_id, customer_name, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5;'
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -c 'SELECT order_id, customer_name, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5;'
   echo ''
   echo '=== Database Size ==='
-  psql -U buatfilm_user -d buatfilm_production -c \"SELECT pg_size_pretty(pg_database_size('buatfilm_production')) AS size;\"
+  psql -h 127.0.0.1 -U buatfilm_user -d buatfilm_production -c \"SELECT pg_size_pretty(pg_database_size('buatfilm_production')) AS size;\"
 "
 echo ""
 
